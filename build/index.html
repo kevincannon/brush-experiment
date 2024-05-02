@@ -1,0 +1,146 @@
+<!-- Tutorial: https://www.youtube.com/watch?v=lCxcTsOHrjo -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        let rounding = true;
+
+        $("#rounder").click(function () {
+          rounding = !rounding; // Toggle the rounding state
+          $(this).toggleClass("bg-green-500", rounding); // Switch to green when active
+          $(this).toggleClass("bg-blue-500", !rounding); // Switch back to blue when inactive
+        });
+
+        const roundingClasses = [
+          "rounded-none",
+          "rounded-sm",
+          "rounded",
+          "rounded-md",
+          "rounded-lg",
+          "rounded-xl",
+          "rounded-2xl",
+          "rounded-3xl",
+          "rounded-full",
+        ];
+
+        $("#preview *:not(script, style, iframe)").click(function () {
+          if (rounding) {
+            // e.preventDefault(); // Prevent the context menu from showing
+            updateRoundingClass($(this), 1); // Increment the rounding class on left-click
+          }
+        });
+
+        $("#preview *:not(script, style, iframe)").on(
+          "contextmenu",
+          function (e) {
+            e.preventDefault(); // Prevent the context menu from showing
+            if (rounding) {
+              updateRoundingClass($(this), -1); // Decrement the rounding class on right-click
+            }
+          }
+        );
+
+        function updateRoundingClass(element, direction) {
+          let currentClass = roundingClasses.find((cls) =>
+            element.hasClass(cls)
+          );
+          let currentIndex = roundingClasses.indexOf(currentClass);
+          let nextIndex = currentIndex + direction;
+
+          // Prevent wrapping around by checking boundaries
+          if (nextIndex >= roundingClasses.length) {
+            nextIndex = roundingClasses.length - 1; // Stay at the last item
+          } else if (nextIndex < 0) {
+            nextIndex = 0; // Stay at the first item
+          }
+
+          element.removeClass(roundingClasses.join(" "));
+          element.addClass(roundingClasses[nextIndex]);
+        }
+      });
+    </script>
+  </head>
+
+  <body class="p-10 bg-slate-100 select-none">
+    <div id="toolbar">
+      <button
+        id="rounder"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Rounder
+      </button>
+    </div>
+
+    <div id="preview">
+      <div class="mt-8">
+        <div class="p-4 bg-gray-200 mb-4" style="width: 100px; height: 100px">
+          Box 1
+        </div>
+        <div class="p-4 bg-gray-200 mb-4" style="width: 100px; height: 100px">
+          Box 2
+        </div>
+        <div class="p-4 bg-gray-200" style="width: 100px; height: 100px">
+          Box 3
+        </div>
+      </div>
+
+      <div class="container px-10 shadow-md bg-white p-6 rounded-md">
+        <!-- Buttons -->
+        <div class="flex justify-between gap-4">
+          <button
+            class="h-10 px-6 font-semibold rounded-md bg-black text-white"
+            type="submit"
+          >
+            Buy
+          </button>
+          <button
+            class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900"
+            type="button"
+          >
+            Close
+          </button>
+          <button
+            class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900"
+            type="button"
+          >
+            Yay!
+          </button>
+        </div>
+
+        <div
+          class="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg w-40 m-6 bg-gray-100 sm:col-span-4 lg:col-span-5"
+        >
+          <img
+            src="https://source.unsplash.com/random?iguana"
+            class="object-cover object-center"
+          />
+        </div>
+
+        <div
+          class="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg w-40 m-6 bg-gray-100 sm:col-span-4 lg:col-span-5"
+        >
+          <img
+            src="https://source.unsplash.com/random?iguana?f"
+            class="object-cover object-center"
+          />
+        </div>
+
+        <div
+          class="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg w-40 m-6 bg-gray-100 sm:col-span-4 lg:col-span-5"
+        >
+          <img
+            src="https://source.unsplash.com/random?iguana?s"
+            class="object-cover object-center"
+          />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
