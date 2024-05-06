@@ -17,7 +17,20 @@
         let startX;
         let selectedElement = null; // Variable to store the element that receives the mousedown
 
+        const fontWeightClasses = [
+          "font-thin",
+          "font-extralight",
+          "font-light",
+          "font-normal",
+          "font-medium",
+          "font-semibold",
+          "font-bold",
+          "font-extrabold",
+          "font-black",
+        ];
+
         const brightnessClasses = [
+          "bg-white",
           "bg-gray-100",
           "bg-gray-200",
           "bg-gray-300",
@@ -27,6 +40,7 @@
           "bg-gray-700",
           "bg-gray-800",
           "bg-gray-900",
+          "bg-black",
         ];
 
         const roundingClasses = [
@@ -71,7 +85,9 @@
         });
 
         // New drag functionality
-        $("#preview *:not(script, style, iframe)").mousedown(function (e) {
+        $("#preview *:not(script, style, iframe, .ignore)").mousedown(function (
+          e
+        ) {
           e.stopPropagation();
           mouseDown = true;
           startX = e.pageX; // Record the x position when mouse goes down
@@ -134,35 +150,40 @@
     </script>
   </head>
 
-  <body class="p-10 bg-slate-100 select-none">
-    <div id="toolbar" class="m-4 p-4">
+  <body class="p-0 m-0 bg-slate-100 select-none">
+    <div
+      id="toolbar"
+      class="flex gap-3 mb-4 p-4 bg-white border-b border-slate-200"
+    >
+      <div class="flex-none mx-auto text-lg font-light uppercase">UIBrush</div>
+      <div class="flex-auto"></div>
       <button
         id="rounder"
-        class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900"
+        class="h-10 flex-none px-6 font-semibold border bg-white border-slate-200 text-slate-900"
       >
         Rounder
       </button>
 
       <button
         id="shadow-toggle"
-        class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900"
+        class="h-10 px-6 flex-none font-semibold border bg-white border-slate-200 text-slate-900"
       >
         Shadows
       </button>
       <button
         id="brightness-toggle"
-        class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900"
+        class="h-10 px-6 flex-none font-semibold border bg-white border-slate-200 text-slate-900"
       >
         Brightness
       </button>
     </div>
 
-    <div id="preview">
+    <div id="preview" class="container mx-auto h-auto">
       <div
-        class="container cursor-ew-resize px-10 shadow-md bg-white p-6 rounded-md w-1/2"
+        class="mx-auto cursor-ew-resize px-10 shadow-md bg-white p-6 rounded-md w-1/2"
       >
         <!-- Buttons -->
-        <div id="buttons-row" class="flex justify-between gap-4">
+        <div id="buttons-row" class="flex justify-between gap-4 ignore">
           <button
             class="h-10 px-6 font-semibold rounded-md bg-black text-white"
             type="submit"
@@ -182,26 +203,60 @@
             Yay!
           </button>
         </div>
-        <div id="images" class="flex flex-col">
-          <img
-            draggable="false"
-            src="https://source.unsplash.com/random?iguana"
-            class="rounded-lg w-40 m-6"
-          />
-
-          <img
-            draggable="false"
-            src="https://source.unsplash.com/random?iguana?A"
-            class="rounded-lg w-40 m-6"
-          />
-
-          <img
-            draggable="false"
-            src="https://source.unsplash.com/random?iguana?b"
-            class="rounded-lg w-40 m-6"
-          />
-        </div>
+        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+          <div class="group relative">
+            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+              <img src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg" alt="Front of men&#039;s Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+            </div>
+            <div class="mt-4 flex justify-between">
+              <div>
+                <h3 class="text-sm text-gray-700">
+                  <a href="#">
+                    <span aria-hidden="true" class="absolute inset-0"></span>
+                    Basic Tee
+                  </a>
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">Black</p>
+              </div>
+              <p class="text-sm font-medium text-gray-900">$35</p>
+            </div>
+          </div>
+          <div class="group relative">
+            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+              <img src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-04.jpg" alt="Front of men&#039;s Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+            </div>
+            <div class="mt-4 flex justify-between">
+              <div>
+                <h3 class="text-sm text-gray-700">
+                  <a href="#">
+                    <span aria-hidden="true" class="absolute inset-0"></span>
+                    Basic Tee
+                  </a>
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">Black</p>
+              </div>
+              <p class="text-sm font-medium text-gray-900">$35</p>
+            </div>
+          </div>
+          <div class="group relative">
+            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+              <img src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-02.jpg" alt="Front of men&#039;s Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+            </div>
+            <div class="mt-4 flex justify-between">
+              <div>
+                <h3 class="text-sm text-gray-700">
+                  <a href="#">
+                    <span aria-hidden="true" class="absolute inset-0"></span>
+                    Basic Tee
+                  </a>
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">Black</p>
+              </div>
+              <p class="text-sm font-medium text-gray-900">$35</p>
+            </div>
+          </div>
       </div>
+
     </div>
   </body>
 </html>
