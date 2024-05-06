@@ -7,3 +7,11 @@ body {
   background-image: radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 0);
   background-size: 20px 20px;
 }
+
+kbd {
+  border-radius: 2px;
+  background-color: #ddd;
+  padding: 1px 4px;
+  font-weight: normal;
+  font-size: 12px;
+}
