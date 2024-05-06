@@ -10,10 +10,24 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
       $(document).ready(function () {
+        let brightness = false;
         let rounding = false;
         let shadowing = false;
         let mouseDown = false;
         let startX;
+        let selectedElement = null; // Variable to store the element that receives the mousedown
+
+        const brightnessClasses = [
+          "bg-gray-100",
+          "bg-gray-200",
+          "bg-gray-300",
+          "bg-gray-400",
+          "bg-gray-500",
+          "bg-gray-600",
+          "bg-gray-700",
+          "bg-gray-800",
+          "bg-gray-900",
+        ];
 
         const roundingClasses = [
           "rounded-none",
@@ -39,37 +53,68 @@
 
         $("#rounder").click(function (e) {
           rounding = !rounding;
-          $(this).toggleClass(" ring-4", rounding);
-          // $(this).toggleClass("simple", !rounding);
+          $(this).toggleClass("ring-4", rounding);
         });
 
         $("#shadow-toggle").click(function (e) {
           shadowing = !shadowing;
           $(this).toggleClass("ring-4", shadowing);
-          // $(this).toggleClass("simple", !shadowing);
         });
 
-        $("#preview *:not(script, style, iframe)").click(function (e) {
+        $("#brightness-toggle").click(function (e) {
+          brightness = !brightness; // Toggle brightness mode
+          $(this).toggleClass("ring-4", brightness);
+          rounding = false; // Ensure other modes are turned off
+          $("#rounder").removeClass("ring-4");
+          shadowing = false;
+          $("#shadow-toggle").removeClass("ring-4");
+        });
+
+        // New drag functionality
+        $("#preview *:not(script, style, iframe)").mousedown(function (e) {
           e.stopPropagation();
-          if (rounding) {
-            updateClass($(this), 1, roundingClasses);
-          } else if (shadowing) {
-            updateClass($(this), 1, shadowClasses);
-          }
+          mouseDown = true;
+          startX = e.pageX; // Record the x position when mouse goes down
+          selectedElement = $(this); // Capture the element where the mousedown event occurred
         });
 
-        $("#preview *:not(script, style, iframe)").on(
-          "contextmenu",
-          function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            if (rounding) {
-              updateClass($(this), -1, roundingClasses);
-            } else if (shadowing) {
-              updateClass($(this), -1, shadowClasses);
+        $(document).mousemove(function (e) {
+          if (mouseDown && selectedElement) {
+            const currentX = e.pageX;
+            const distance = currentX - startX;
+
+            if (Math.abs(distance) >= 50) {
+              if (distance > 0) {
+                updateClass(
+                  selectedElement,
+                  1,
+                  brightness
+                    ? brightnessClasses
+                    : rounding
+                    ? roundingClasses
+                    : shadowClasses
+                );
+              } else {
+                updateClass(
+                  selectedElement,
+                  -1,
+                  brightness
+                    ? brightnessClasses
+                    : rounding
+                    ? roundingClasses
+                    : shadowClasses
+                );
+              }
+
+              startX = currentX; // Reset start position for continuous dragging
             }
           }
-        );
+        });
+
+        $(document).mouseup(function () {
+          mouseDown = false;
+          selectedElement = null; // Clear the selected element on mouseup
+        });
 
         function updateClass(element, direction, classList) {
           let currentClass = classList.find((cls) => element.hasClass(cls));
@@ -90,38 +135,34 @@
   </head>
 
   <body class="p-10 bg-slate-100 select-none">
-    <div id="toolbar m-4">
+    <div id="toolbar" class="m-4 p-4">
       <button
         id="rounder"
-        class="bg-gray-700 text-white simple py-2 px-4 rounded"
+        class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900"
       >
         Rounder
       </button>
 
       <button
         id="shadow-toggle"
-        class="bg-gray-700 text-white py-2 px-4 rounded"
+        class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900"
       >
         Shadows
+      </button>
+      <button
+        id="brightness-toggle"
+        class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900"
+      >
+        Brightness
       </button>
     </div>
 
     <div id="preview">
-      <div class="mt-8">
-        <div class="p-4 bg-gray-200 mb-4" style="width: 100px; height: 100px">
-          Box 1
-        </div>
-        <div class="p-4 bg-gray-200 mb-4" style="width: 100px; height: 100px">
-          Box 2
-        </div>
-        <div class="p-4 bg-gray-200" style="width: 100px; height: 100px">
-          Box 3
-        </div>
-      </div>
-
-      <div class="container px-10 shadow-md bg-white p-6 rounded-md">
+      <div
+        class="container cursor-ew-resize px-10 shadow-md bg-white p-6 rounded-md w-1/2"
+      >
         <!-- Buttons -->
-        <div class="flex justify-between gap-4">
+        <div id="buttons-row" class="flex justify-between gap-4">
           <button
             class="h-10 px-6 font-semibold rounded-md bg-black text-white"
             type="submit"
@@ -141,31 +182,23 @@
             Yay!
           </button>
         </div>
-
-        <div
-          class="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg w-40 m-6 bg-gray-100 sm:col-span-4 lg:col-span-5"
-        >
+        <div id="images" class="flex flex-col">
           <img
+            draggable="false"
             src="https://source.unsplash.com/random?iguana"
-            class="object-cover object-center"
+            class="rounded-lg w-40 m-6"
           />
-        </div>
 
-        <div
-          class="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg w-40 m-6 bg-gray-100 sm:col-span-4 lg:col-span-5"
-        >
           <img
-            src="https://source.unsplash.com/random?iguana?f"
-            class="object-cover object-center"
+            draggable="false"
+            src="https://source.unsplash.com/random?iguana?A"
+            class="rounded-lg w-40 m-6"
           />
-        </div>
 
-        <div
-          class="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg w-40 m-6 bg-gray-100 sm:col-span-4 lg:col-span-5"
-        >
           <img
-            src="https://source.unsplash.com/random?iguana?s"
-            class="object-cover object-center"
+            draggable="false"
+            src="https://source.unsplash.com/random?iguana?b"
+            class="rounded-lg w-40 m-6"
           />
         </div>
       </div>
