@@ -9,144 +9,82 @@
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
-      $(document).ready(function () {
-        let brightness = false;
-        let rounding = false;
-        let shadowing = false;
-        let mouseDown = false;
-        let startX;
-        let selectedElement = null; // Variable to store the element that receives the mousedown
+     $(document).ready(function () {
+  let activeMode = null;
+  let mouseDown = false;
+  let startX;
+  let selectedElement = null;
 
-        const fontWeightClasses = [
-          "font-thin",
-          "font-extralight",
-          "font-light",
-          "font-normal",
-          "font-medium",
-          "font-semibold",
-          "font-bold",
-          "font-extrabold",
-          "font-black",
-        ];
+  const modeClasses = {
+    rounding: [
+      "rounded-none", "rounded-sm", "rounded", "rounded-md",
+      "rounded-lg", "rounded-xl", "rounded-2xl", "rounded-3xl", "rounded-full"
+    ],
+    shadowing: [
+      "shadow-none", "shadow-sm", "shadow", "shadow-md",
+      "shadow-lg", "shadow-xl", "shadow-2xl"
+    ],
+    brightness: [
+      "bg-gray-100", "bg-gray-200", "bg-gray-300", "bg-gray-400",
+      "bg-gray-500", "bg-gray-600", "bg-gray-700", "bg-gray-800", "bg-gray-900"
+    ]
+  };
 
-        const brightnessClasses = [
-          "bg-white",
-          "bg-gray-100",
-          "bg-gray-200",
-          "bg-gray-300",
-          "bg-gray-400",
-          "bg-gray-500",
-          "bg-gray-600",
-          "bg-gray-700",
-          "bg-gray-800",
-          "bg-gray-900",
-          "bg-black",
-        ];
+  $(".mode-toggle").click(function (e) {
+    let mode = $(this).data("mode");
 
-        const roundingClasses = [
-          "rounded-none",
-          "rounded-sm",
-          "rounded",
-          "rounded-md",
-          "rounded-lg",
-          "rounded-xl",
-          "rounded-2xl",
-          "rounded-3xl",
-          "rounded-full",
-        ];
+    if (activeMode !== mode) {
+      // Toggle off any other active mode
+      $(".mode-toggle").removeClass("ring-4");
+      $(this).addClass("ring-4");
+      activeMode = mode;
+    } else {
+      $(this).removeClass("ring-4");
+      activeMode = null;
+    }
+  });
 
-        const shadowClasses = [
-          "shadow-none",
-          "shadow-sm",
-          "shadow",
-          "shadow-md",
-          "shadow-lg",
-          "shadow-xl",
-          "shadow-2xl",
-        ];
+  // Drag functionality to adjust selected element
+  $("#preview *:not(script, style, iframe)").mousedown(function (e) {
+    e.stopPropagation();
+    mouseDown = true;
+    startX = e.pageX;
+    selectedElement = $(this);
+  });
 
-        $("#rounder").click(function (e) {
-          rounding = !rounding;
-          $(this).toggleClass("ring-4", rounding);
-        });
+  $(document).mousemove(function (e) {
+    if (mouseDown && selectedElement && activeMode) {
+      const currentX = e.pageX;
+      const distance = currentX - startX;
 
-        $("#shadow-toggle").click(function (e) {
-          shadowing = !shadowing;
-          $(this).toggleClass("ring-4", shadowing);
-        });
+      if (Math.abs(distance) >= 50) {
+        const direction = distance > 0 ? 1 : -1;
+        updateClass(selectedElement, direction, modeClasses[activeMode]);
+        startX = currentX;
+      }
+    }
+  });
 
-        $("#brightness-toggle").click(function (e) {
-          brightness = !brightness; // Toggle brightness mode
-          $(this).toggleClass("ring-4", brightness);
-          rounding = false; // Ensure other modes are turned off
-          $("#rounder").removeClass("ring-4");
-          shadowing = false;
-          $("#shadow-toggle").removeClass("ring-4");
-        });
+  $(document).mouseup(function () {
+    mouseDown = false;
+    selectedElement = null;
+  });
 
-        // New drag functionality
-        $("#preview *:not(script, style, iframe, .ignore)").mousedown(function (
-          e
-        ) {
-          e.stopPropagation();
-          mouseDown = true;
-          startX = e.pageX; // Record the x position when mouse goes down
-          selectedElement = $(this); // Capture the element where the mousedown event occurred
-        });
+  function updateClass(element, direction, classList) {
+    let currentClass = classList.find(cls => element.hasClass(cls));
+    let currentIndex = classList.indexOf(currentClass);
+    let nextIndex = currentIndex + direction;
 
-        $(document).mousemove(function (e) {
-          if (mouseDown && selectedElement) {
-            const currentX = e.pageX;
-            const distance = currentX - startX;
+    if (nextIndex >= classList.length) {
+      nextIndex = classList.length - 1;
+    } else if (nextIndex < 0) {
+      nextIndex = 0;
+    }
 
-            if (Math.abs(distance) >= 50) {
-              if (distance > 0) {
-                updateClass(
-                  selectedElement,
-                  1,
-                  brightness
-                    ? brightnessClasses
-                    : rounding
-                    ? roundingClasses
-                    : shadowClasses
-                );
-              } else {
-                updateClass(
-                  selectedElement,
-                  -1,
-                  brightness
-                    ? brightnessClasses
-                    : rounding
-                    ? roundingClasses
-                    : shadowClasses
-                );
-              }
-
-              startX = currentX; // Reset start position for continuous dragging
-            }
-          }
-        });
-
-        $(document).mouseup(function () {
-          mouseDown = false;
-          selectedElement = null; // Clear the selected element on mouseup
-        });
-
-        function updateClass(element, direction, classList) {
-          let currentClass = classList.find((cls) => element.hasClass(cls));
-          let currentIndex = classList.indexOf(currentClass);
-          let nextIndex = currentIndex + direction;
-
-          if (nextIndex >= classList.length) {
-            nextIndex = classList.length - 1;
-          } else if (nextIndex < 0) {
-            nextIndex = 0;
-          }
-
-          element.removeClass(classList.join(" "));
-          element.addClass(classList[nextIndex]);
-        }
-      });
+    element.removeClass(classList.join(" "));
+    element.addClass(classList[nextIndex]);
+  }
+});
     </script>
   </head>
 
@@ -157,23 +95,15 @@
     >
       <div class="flex-none mx-auto text-lg font-light uppercase">UIBrush</div>
       <div class="flex-auto"></div>
-      <button
-        id="rounder"
-        class="h-10 flex-none px-6 font-semibold border bg-white border-slate-200 text-slate-900"
-      >
+      <button id="rounder" data-mode="rounding" class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900 mode-toggle">
         Rounder
       </button>
-
-      <button
-        id="shadow-toggle"
-        class="h-10 px-6 flex-none font-semibold border bg-white border-slate-200 text-slate-900"
-      >
+      
+      <button id="shadow-toggle" data-mode="shadowing" class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900 mode-toggle">
         Shadows
       </button>
-      <button
-        id="brightness-toggle"
-        class="h-10 px-6 flex-none font-semibold border bg-white border-slate-200 text-slate-900"
-      >
+      
+      <button id="brightness-toggle" data-mode="brightness" class="h-10 px-6 font-semibold rounded-md border bg-white border-slate-200 text-slate-900 mode-toggle">
         Brightness
       </button>
     </div>
@@ -204,51 +134,45 @@
           </button>
         </div>
         <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-          <div class="group relative">
-            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-              <img src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg" alt="Front of men&#039;s Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+          <div class="group relative ignore">
+            <div class="aspect-h-1 ignore aspect-w-1 w-full  rounded-md bg-gray-200 lg:aspect-none lg:h-80">
+              <img draggable="false" src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"  class="h-full w-full object-cover object-center lg:h-full lg:w-full">
             </div>
             <div class="mt-4 flex justify-between">
               <div>
                 <h3 class="text-sm text-gray-700">
-                  <a href="#">
                     <span aria-hidden="true" class="absolute inset-0"></span>
                     Basic Tee
-                  </a>
                 </h3>
                 <p class="mt-1 text-sm text-gray-500">Black</p>
               </div>
               <p class="text-sm font-medium text-gray-900">$35</p>
             </div>
           </div>
-          <div class="group relative">
-            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-              <img src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-04.jpg" alt="Front of men&#039;s Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+          <div class="group relative ignore">
+            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none  lg:h-80">
+              <img draggable="false" src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-04.jpg" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
             </div>
             <div class="mt-4 flex justify-between">
               <div>
                 <h3 class="text-sm text-gray-700">
-                  <a href="#">
                     <span aria-hidden="true" class="absolute inset-0"></span>
                     Basic Tee
-                  </a>
                 </h3>
                 <p class="mt-1 text-sm text-gray-500">Black</p>
               </div>
               <p class="text-sm font-medium text-gray-900">$35</p>
             </div>
           </div>
-          <div class="group relative">
-            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-              <img src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-02.jpg" alt="Front of men&#039;s Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+          <div class="group relative ignore">
+            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none  lg:h-80">
+              <img draggable="false" src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-02.jpg" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
             </div>
             <div class="mt-4 flex justify-between">
               <div>
                 <h3 class="text-sm text-gray-700">
-                  <a href="#">
                     <span aria-hidden="true" class="absolute inset-0"></span>
                     Basic Tee
-                  </a>
                 </h3>
                 <p class="mt-1 text-sm text-gray-500">Black</p>
               </div>
