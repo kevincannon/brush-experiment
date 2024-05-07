@@ -649,6 +649,10 @@ video {
   margin: 0.75rem;
 }
 
+.m-4 {
+  margin: 1rem;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -718,6 +722,10 @@ video {
   height: 3rem;
 }
 
+.h-16 {
+  height: 4rem;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -736,6 +744,10 @@ video {
 
 .w-\[200\%\] {
   width: 200%;
+}
+
+.w-16 {
+  width: 4rem;
 }
 
 .max-w-2xl {
