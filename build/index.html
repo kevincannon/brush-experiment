@@ -83,11 +83,21 @@
           const currentX = e.pageX;
           const distance = currentX - startX;
 
-          if (Math.abs(distance) >= 50) {
+          if (Math.abs(distance) >= 20) {
             const direction = distance > 0 ? 1 : -1;
             updateClass(selectedElement, direction, modeClasses[activeMode]);
             startX = currentX;
           }
+
+          $("#tooltip").css({
+            top: e.pageY + 20,
+            left: e.pageX + 20
+          });
+        } else {
+          $("#tooltip").css({
+            top: -100,
+            left: -100
+          });
         }
       });
 
@@ -108,7 +118,12 @@
         }
 
         element.removeClass(classList.join(" "));
-        element.addClass(classList[nextIndex]);
+        let newClass = classList[nextIndex];
+        element.addClass(newClass);
+
+    
+        $("#tooltip").text(newClass);
+
       }
     });
     </script>
@@ -209,6 +224,10 @@
           </div>
       </div>
 
+    </div>
+
+
+    <div id="tooltip" class="bg-slate-950 opacity-80 text-white px-2 py-1 rounded-md text-center text-xs inline-block absolute -top-full -left-full">
     </div>
   </body>
 </html>

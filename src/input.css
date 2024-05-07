@@ -15,3 +15,11 @@ kbd {
   font-weight: normal;
   font-size: 12px;
 }
+
+/* Hover top most element */
+
+#preview:hover:not(:has(*:hover), .ignore),
+#preview *:hover:not(:has(*:hover), .ignore) {
+  outline: 2px solid rgb(255, 255, 0, 0.8);
+  outline-offset: 2px;
+}
