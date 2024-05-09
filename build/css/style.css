@@ -685,6 +685,22 @@ video {
   width: 100%;
 }
 
+.w-96 {
+  width: 24rem;
+}
+
+.w-\[600px\] {
+  width: 600px;
+}
+
+.w-auto {
+  width: auto;
+}
+
+.w-2\/3 {
+  width: 66.666667%;
+}
+
 .max-w-2xl {
   max-width: 42rem;
 }
@@ -788,6 +804,10 @@ video {
 
 .border {
   border-width: 1px;
+}
+
+.border-2 {
+  border-width: 2px;
 }
 
 .border-b {
