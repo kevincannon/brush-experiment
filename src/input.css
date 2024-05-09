@@ -23,3 +23,8 @@ kbd {
   outline: 2px solid rgb(255, 255, 0, 0.8);
   outline-offset: 2px;
 }
+
+.selected {
+  outline: 2px solid rgb(255, 255, 0, 0.8);
+  outline-offset: 2px;
+}

@@ -13,7 +13,7 @@
         let activeMode = null;
         let mouseDown = false;
         let startX;
-        let selectedElement = null;
+        let selectedElements = [];
 
         const modeClasses = {
           rounding: [
@@ -52,7 +52,7 @@
             "font-thin",
             "font-extralight",
             "font-light",
-            "font-nromal",
+            "font-normal",
             "font-medium",
             "font-semibold",
             "font-bold",
@@ -64,9 +64,7 @@
         // Handle the tool toggle buttons
         $(".mode-toggle").click(function (e) {
           let mode = $(this).data("mode");
-
           if (activeMode !== mode) {
-            // Toggle off any other active mode
             $(".mode-toggle").removeClass("ring-4");
             $(this).addClass("ring-4");
             activeMode = mode;
@@ -78,8 +76,11 @@
 
         // Handle keyboard shortcuts
         $(document).keydown(function (event) {
-          if (!$(event.target).is("input, textarea")) {
-            // Check if focus is not on an input or textarea to avoid conflicts
+          if (event.key === "Escape") {
+            selectedElements.forEach((el) => $(el).removeClass("selected")); // Clear visual feedback
+            selectedElements = []; // Clear the array of selected elements
+          } else if (!$(event.target).is("input, textarea")) {
+            // Handle other keys for shortcuts
             switch (event.key.toLowerCase()) {
               case "r":
                 $("#rounder").click();
@@ -97,60 +98,62 @@
           }
         });
 
-        // Drag functionality to adjust selected element
+        // Multi-selection and drag functionality
         $("#preview *:not(script, style, iframe, .ignore)").mousedown(function (
           e
         ) {
           e.stopPropagation();
+
+          if (e.shiftKey) {
+            // Shift key is pressed, add to selection
+            let element = $(this);
+            if (selectedElements.includes(element[0])) {
+              element.removeClass("selected"); // Visual feedback
+              selectedElements = selectedElements.filter(
+                (el) => el !== element[0]
+              );
+            } else {
+              element.addClass("selected"); // Visual feedback
+              selectedElements.push(element[0]);
+            }
+          }
+
           mouseDown = true;
           startX = e.pageX;
-          selectedElement = $(this);
         });
 
         $(document).mousemove(function (e) {
-          if (mouseDown && selectedElement && activeMode) {
+          if (mouseDown && selectedElements.length && activeMode) {
             const currentX = e.pageX;
             const distance = currentX - startX;
-
             if (Math.abs(distance) >= 20) {
               const direction = distance > 0 ? 1 : -1;
-              updateClass(selectedElement, direction, modeClasses[activeMode]);
+              selectedElements.forEach((elem) => {
+                updateClass($(elem), direction, modeClasses[activeMode]);
+              });
               startX = currentX;
             }
-
-            $("#tooltip").css({
-              top: e.pageY + 20,
-              left: e.pageX + 20,
-            });
-          } else {
-            $("#tooltip").css({
-              top: -100,
-              left: -100,
-            });
           }
         });
 
         $(document).mouseup(function () {
           mouseDown = false;
-          selectedElement = null;
         });
 
         function updateClass(element, direction, classList) {
           let currentClass = classList.find((cls) => element.hasClass(cls));
           let currentIndex = classList.indexOf(currentClass);
           let nextIndex = currentIndex + direction;
-
           if (nextIndex >= classList.length) {
             nextIndex = classList.length - 1;
           } else if (nextIndex < 0) {
             nextIndex = 0;
           }
-
           element.removeClass(classList.join(" "));
           let newClass = classList[nextIndex];
           element.addClass(newClass);
 
-          $("#tooltip").text(newClass);
+          $("#tooltip").text(newClass); // Optional: Update tooltip
         }
       });
     </script>
@@ -280,9 +283,7 @@
       <div
         class="mx-auto cursor-ew-resize px-10 m-10 shadow-md bg-white p-6 rounded-md w-1/2"
       >
-        <section
-          class="relative isolate overflow-hidden bg-white px-6 py-4 ignore"
-        >
+        <section class="relative isolate overflow-hidden px-6 py-4 ignore">
           <div class="mx-auto max-w-2xl lg:max-w-4xl ignore">
             <figure class="mt-10 ignore">
               <div class="text-gray-600 font-bold text-center">Testimonal</div>
